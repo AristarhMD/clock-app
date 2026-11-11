@@ -2,24 +2,37 @@ import { useEffect, useState } from "react";
 import dayBackground from "./assets/mobile/bg-image-daytime.jpg";
 
 function App() {
-  const [weather, setWeather] = useState(null);
+  const quotesKey = import.meta.env.VITE_QUOTES_KEY;
+  const ipKey = import.meta.env.VITE_IP_KEY;
+
   const [quote, setQuote] = useState(null);
+  const [weather, setWeather] = useState(null);
+  const [ipData, setIpData] = useState(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     async function loadData() {
       try {
-        const [weatherRes, quoteRes] = await Promise.all([
+        const [weatherRes, quoteRes, ipRes] = await Promise.all([
           fetch("https://time.now/developer/api/ip"),
-          fetch("https://api.api-ninjas.com/v2/randomquotes"),
+          fetch("https://api.api-ninjas.com/v2/randomquotes", {
+            headers: {
+              "X-Api-Key": quotesKey,
+            },
+          }),
+          fetch("https://api.ipbase.com/v2/info", {
+            header: { apikey: ipKey },
+          }),
         ]);
 
-        if (!weatherRes.ok || !quoteRes.ok) throw Error("Something went wrong");
+        if (!weatherRes.ok || !quoteRes.ok || !ipRes.ok)
+          throw Error("Something went wrong");
 
         const weatherData = await weatherRes.json();
         const quoteData = await quoteRes.json();
-        console.log(weatherData);
+        const ipData = await ipRes.json();
         setWeather(weatherData);
         setQuote(quoteData);
+        setIpData(ipData);
       } catch (error) {
         console.log(error.message);
       } finally {
@@ -28,6 +41,9 @@ function App() {
     }
     loadData();
   }, []);
+
+  console.log(weather);
+  console.log(ipData);
 
   return (
     <main className="bg-[linear-gradient(to_bottom,rgba(0,0,0,0.4),rgba(0,0,0,0.4)),url('./assets/mobile/bg-image-daytime.jpg')] bg-cover bg-no-repeat h-full ">
@@ -73,9 +89,15 @@ function App() {
                 </span>
               </p>
               <p className="preset-1-mob md:preset-1">
-                11:37 <span className="preset-3-mob md:preset-3s">BST</span>
+                {ipData.data.timezone.current_time.slice(11, 16)}
+                <span className="preset-3-mob md:preset-3s">
+                  GMT{ipData.data.timezone.code}
+                </span>
               </p>
-              <p className="preset-4-mob md:preset-4">IN LONDON, UKs</p>
+              <p className="preset-4-mob md:preset-4 uppercase">
+                IN {ipData.data.location.city.name},{" "}
+                {ipData.data.location.country.fips}
+              </p>
             </div>
             <button className="cursor-pointer py-2 w-36 bg-neutral-0 rounded-full preset-8 text-neutral-800 flex items-center justify-center gap-3">
               MORE
@@ -83,7 +105,7 @@ function App() {
                 <svg width="14" height="9" xmlns="http://www.w3.org/2000/svg">
                   <path
                     stroke="#FFF"
-                    stroke-width="2"
+                    strokeWidth="2"
                     fill="none"
                     d="m1 1 6 6 6-6"
                   />
