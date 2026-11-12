@@ -1,37 +1,59 @@
 import { useEffect, useState } from "react";
-import dayBackground from "./assets/mobile/bg-image-daytime.jpg";
 
 function App() {
   const quotesKey = import.meta.env.VITE_QUOTES_KEY;
   const ipKey = import.meta.env.VITE_IP_KEY;
 
+  const [isQuoteLoading, setIsQuoteLoading] = useState(false);
   const [quote, setQuote] = useState(null);
   const [weather, setWeather] = useState(null);
   const [ipData, setIpData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
 
+  async function fetchQuotes() {
+    const res = await fetch("https://api.api-ninjas.com/v2/randomquotes", {
+      headers: {
+        "X-Api-Key": quotesKey,
+      },
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch quote");
+    return res.json();
+  }
+
   useEffect(() => {
     async function loadData() {
       try {
-        const [weatherRes, quoteRes, ipRes] = await Promise.all([
+        const [weatherRes, quoteData, ipRes] = await Promise.all([
           fetch("https://time.now/developer/api/ip"),
-          fetch("https://api.api-ninjas.com/v2/randomquotes", {
-            headers: {
-              "X-Api-Key": quotesKey,
-            },
-          }),
+          fetchQuotes(),
           fetch("https://api.ipbase.com/v2/info", {
             header: { apikey: ipKey },
           }),
         ]);
 
-        if (!weatherRes.ok || !quoteRes.ok || !ipRes.ok)
-          throw Error("Something went wrong");
+        if (!weatherRes.ok && !ipRes.ok) {
+          const bodyWeater = await weatherRes.text();
+          const bodyIp = await ipRes.text();
+          throw new Error(
+            `weather api ${weatherRes.status}: ${bodyWeater},ips api ${weatherRes.status}: ${bodyIp} `,
+          );
+        }
+
+        if (!weatherRes.ok || !ipRes.ok) {
+          if (!weatherRes.ok) {
+            const body = await weatherRes.text();
+            throw new Error(`weather api ${weatherRes.status}: ${body}`);
+          } else if (!ipRes.ok) {
+            const body = await ipRes.text();
+            throw new Error(`ips api ${weatherRes.status}: ${body}`);
+          }
+        }
 
         const weatherData = await weatherRes.json();
-        const quoteData = await quoteRes.json();
         const ipData = await ipRes.json();
+
         setWeather(weatherData);
         setQuote(quoteData);
         setIpData(ipData);
@@ -46,8 +68,18 @@ function App() {
 
   const handleOpenInfo = () => setIsOpen((prev) => !prev);
 
-  console.log(weather);
-  console.log(ipData);
+  const handleUpdateQuote = async () => {
+    if (isQuoteLoading) return;
+    setIsQuoteLoading(true);
+    try {
+      const newQuote = await fetchQuotes();
+      setQuote(newQuote);
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setIsQuoteLoading(false);
+    }
+  };
 
   return (
     <main className="bg-[linear-gradient(to_bottom,rgba(0,0,0,0.4),rgba(0,0,0,0.4)),url('./assets/mobile/bg-image-daytime.jpg')] bg-cover bg-no-repeat h-full ">
@@ -57,15 +89,20 @@ function App() {
         <section className="h-full py-8 w-[91.46%] md:py-16 md:w-[83.33%] xl:w-[77.08%] mx-auto flex flex-col justify-between">
           <div className="flex items-start justify-center xl:mr-auto gap-4">
             <p className="text-neutral-0 preset-6 flex flex-col gap-3 items-start justify-center">
-              "{quote[0].quote}"
+              {quote[0].quote}
               <span className="preset-7">{quote[0].author}</span>
             </p>
-            <button className="group cursor-pointer py-1.5 rounded-full outline-none focus:ring-offset-1 focus:ring-2 focus:ring-neutral-0">
+            <button
+              className="group cursor-pointer mt-1.5 rounded-full "
+              onClick={handleUpdateQuote}
+              disabled={isQuoteLoading}
+              aria-label="Get a new quote"
+            >
               <svg
                 width="18"
                 height="18"
                 xmlns="http://www.w3.org/2000/svg"
-                className="fill-neutral-0 opacity-50 group-hover:opacity-100 group-focus:opacity-100"
+                className={`fill-neutral-0 opacity-50 group-hover:opacity-100 group-focus:opacity-100 ${isQuoteLoading ? "animate-spin" : ""}`}
               >
                 <path
                   d="M7.188 10.667a.208.208 0 01.147.355l-2.344 2.206a5.826 5.826 0 009.578-2.488l2.387.746A8.322 8.322 0 013.17 14.94l-2.149 2.022a.208.208 0 01-.355-.148v-6.148h6.52zm7.617-7.63L16.978.958a.208.208 0 01.355.146v6.23h-6.498a.208.208 0 01-.147-.356L13 4.765A5.825 5.825 0 003.43 7.26l-2.386-.746a8.32 8.32 0 0113.76-3.477z"
