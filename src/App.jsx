@@ -9,6 +9,8 @@ function App() {
   const [weather, setWeather] = useState(null);
   const [ipData, setIpData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+
   useEffect(() => {
     async function loadData() {
       try {
@@ -42,6 +44,8 @@ function App() {
     loadData();
   }, []);
 
+  const handleOpenInfo = () => setIsOpen((prev) => !prev);
+
   console.log(weather);
   console.log(ipData);
 
@@ -51,17 +55,17 @@ function App() {
         <p>Loading...</p>
       ) : (
         <section className="h-full py-8 w-[91.46%] md:py-16 md:w-[83.33%] xl:w-[77.08%] mx-auto flex flex-col justify-between">
-          <div className="flex items-start justify-center gap-4">
+          <div className="flex items-start justify-center xl:mr-auto gap-4">
             <p className="text-neutral-0 preset-6 flex flex-col gap-3 items-start justify-center">
               "{quote[0].quote}"
               <span className="preset-7">{quote[0].author}</span>
             </p>
-            <button className="group cursor-pointer">
+            <button className="group cursor-pointer py-1.5 rounded-full outline-none focus:ring-offset-1 focus:ring-2 focus:ring-neutral-0">
               <svg
                 width="18"
                 height="18"
                 xmlns="http://www.w3.org/2000/svg"
-                className="fill-neutral-0 opacity-50 group-hover:opacity-100"
+                className="fill-neutral-0 opacity-50 group-hover:opacity-100 group-focus:opacity-100"
               >
                 <path
                   d="M7.188 10.667a.208.208 0 01.147.355l-2.344 2.206a5.826 5.826 0 009.578-2.488l2.387.746A8.322 8.322 0 013.17 14.94l-2.149 2.022a.208.208 0 01-.355-.148v-6.148h6.52zm7.617-7.63L16.978.958a.208.208 0 01.355.146v6.23h-6.498a.208.208 0 01-.147-.356L13 4.765A5.825 5.825 0 003.43 7.26l-2.386-.746a8.32 8.32 0 0113.76-3.477z"
@@ -88,9 +92,9 @@ function App() {
                   </span>
                 </span>
               </p>
-              <p className="preset-1-mob md:preset-1">
+              <p className="preset-1-mob md:preset-1 flex items-end gap-2">
                 {ipData.data.timezone.current_time.slice(11, 16)}
-                <span className="preset-3-mob md:preset-3s">
+                <span className="preset-3-mob md:preset-3">
                   GMT{ipData.data.timezone.code}
                 </span>
               </p>
@@ -99,10 +103,18 @@ function App() {
                 {ipData.data.location.country.fips}
               </p>
             </div>
-            <button className="cursor-pointer py-2 w-36 bg-neutral-0 rounded-full preset-8 text-neutral-800 flex items-center justify-center gap-3">
-              MORE
-              <span className="size-10 rounded-full bg-neutral-800 flex items-center justify-center">
-                <svg width="14" height="9" xmlns="http://www.w3.org/2000/svg">
+            <button
+              className="mr-auto w-36 group cursor-pointer py-2 pr-2 pl-5 bg-neutral-0 rounded-full preset-8 text-neutral-800 hover:text-neutral-500 flex items-center justify-between  xl:self-end focus:ring-3 focus:ring-neutral-900 focus:shadow-[0_0_0_5px_#fff] focus:outline-none focus:text-neutral-500"
+              onClick={handleOpenInfo}
+            >
+              {isOpen ? "LESS" : "MORE"}
+              <span className="w-10 h-10 rounded-full bg-neutral-800 group-hover:bg-neutral-500 group-focus:bg-neutral-500 flex items-center justify-center ml-auto">
+                <svg
+                  width="14"
+                  height="9"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`transition-all duration-300 ease-in-out ${isOpen ? "-rotate-180" : ""}`}
+                >
                   <path
                     stroke="#FFF"
                     strokeWidth="2"
