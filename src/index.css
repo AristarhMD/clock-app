@@ -26,7 +26,7 @@
 }
 
 @utility preset-2-mob {
-  @apply font-bold text-xl leading-[120] tracking-normal;
+  @apply font-bold text-xl leading-[120%] tracking-normal;
 }
 
 @utility preset-3 {
@@ -65,6 +65,6 @@
   @apply font-normal text-[0.9375rem] leading-[150%] tracking-[3px];
 }
 
-@utility preset-10 {
+@utility preset-9-mob {
   @apply font-normal text-[0.625rem] leading-[150%] tracking-[2px];
 }

@@ -81,19 +81,22 @@ function App() {
     }
   };
 
+  console.log(ipData);
   return (
-    <main className="bg-[linear-gradient(to_bottom,rgba(0,0,0,0.4),rgba(0,0,0,0.4)),url('./assets/mobile/bg-image-daytime.jpg')] bg-cover bg-no-repeat h-full ">
+    <main className="bg-[linear-gradient(to_bottom,rgba(0,0,0,0.4),rgba(0,0,0,0.4)),url('./assets/mobile/bg-image-daytime.jpg')] bg-cover bg-no-repeat bg-top min-h-screen ">
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <section className="h-full py-8 w-[91.46%] md:py-16 md:w-[83.33%] xl:w-[77.08%] mx-auto flex flex-col justify-between">
-          <div className="flex items-start justify-center xl:mr-auto gap-4">
+        <section className="min-h-screen mx-auto flex flex-col justify-between items-center">
+          <div
+            className={`${isOpen ? "hidden" : "flex"} items-start justify-center md:justify-start xl:mr-auto gap-4 pt-8 w-[91.46%] md:pt-16 md:w-[83.33%] xl:w-[77.08%] mx-auto`}
+          >
             <p className="text-neutral-0 preset-6 flex flex-col gap-3 items-start justify-center">
-              {quote[0].quote}
+              "{quote[0].quote}"
               <span className="preset-7">{quote[0].author}</span>
             </p>
             <button
-              className="group cursor-pointer mt-1.5 rounded-full "
+              className="group cursor-pointer mt-1.5 rounded-full ml-auto"
               onClick={handleUpdateQuote}
               disabled={isQuoteLoading}
               aria-label="Get a new quote"
@@ -112,7 +115,9 @@ function App() {
             </button>
           </div>
 
-          <div className="flex flex-col xl:flex-row gap-16 md:gap-20 xl:justify-between">
+          <div
+            className={`flex flex-col xl:flex-row gap-16 md:gap-20 xl:gap-0 xl:justify-between ${isOpen ? "pt-20 md:pt-16 md:pb-29.5 xl:pb-0" : "pb-8 md:pb-16"}  w-[91.46%]  md:w-[83.33%] xl:w-[77.08%]`}
+          >
             <div className="text-neutral-0 flex flex-col gap-6 md:gap-10">
               <p className="flex items-center justify-start gap-4 preset-5">
                 <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
@@ -132,7 +137,7 @@ function App() {
               <p className="preset-1-mob md:preset-1 flex items-end gap-2">
                 {ipData.data.timezone.current_time.slice(11, 16)}
                 <span className="preset-3-mob md:preset-3">
-                  GMT{ipData.data.timezone.code}
+                  {ipData.data.timezone.code}
                 </span>
               </p>
               <p className="preset-4-mob md:preset-4 uppercase">
@@ -141,7 +146,7 @@ function App() {
               </p>
             </div>
             <button
-              className="mr-auto w-36 group cursor-pointer py-2 pr-2 pl-5 bg-neutral-0 rounded-full preset-8 text-neutral-800 hover:text-neutral-500 flex items-center justify-between  xl:self-end focus:ring-3 focus:ring-neutral-900 focus:shadow-[0_0_0_5px_#fff] focus:outline-none focus:text-neutral-500"
+              className="mr-auto w-36 group cursor-pointer py-2 pr-2 pl-5 bg-neutral-0 rounded-full preset-8 text-neutral-800 hover:text-neutral-500 flex items-center justify-between xl:self-end xl:mr-0  focus:ring-3 focus:ring-neutral-900 focus:shadow-[0_0_0_5px_#fff] focus:outline-none focus:text-neutral-500"
               onClick={handleOpenInfo}
             >
               {isOpen ? "LESS" : "MORE"}
@@ -161,6 +166,39 @@ function App() {
                 </svg>
               </span>
             </button>
+          </div>
+
+          <div
+            className={`py-12 md:py-28  w-full  preset-9-mob md:preset-9 text-neutral-800 bg-neutral-0/75 backdrop-blur-[1px] ${isOpen ? "opacity-100 h-full w-full  visible " : "opacity-0 h-0 w-0 collapse"}`}
+          >
+            <div className="overflow-hidden">
+              <div className=" w-[91.46%] md:w-[83.33%] xl:w-[77.08%] grid grid-cols-1 md:grid-cols-2 gap-y-4 md:gap-10 mx-auto">
+                <p className="flex md:flex-col justify-between items-center md:items-start">
+                  CURRENT TIMEZONE
+                  <span className="preset-2-mob md:preset-2-tablet xl:preset-2">
+                    Europe/London
+                  </span>
+                </p>
+                <p className="flex md:flex-col justify-between items-center md:items-start">
+                  DAY OF THE YEAR
+                  <span className="preset-2-mob md:preset-2-tablet xl:preset-2">
+                    295
+                  </span>
+                </p>
+                <p className="flex md:flex-col justify-between items-center md:items-start">
+                  DAY OF THE WEEK
+                  <span className="preset-2-mob md:preset-2-tablet xl:preset-2">
+                    5
+                  </span>
+                </p>
+                <p className="flex md:flex-col justify-between items-center md:items-start">
+                  WEEK NUMBER
+                  <span className="preset-2-mob md:preset-2-tablet xl:preset-2">
+                    42
+                  </span>
+                </p>
+              </div>
+            </div>
           </div>
         </section>
       )}
