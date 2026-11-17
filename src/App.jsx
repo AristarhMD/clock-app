@@ -81,7 +81,6 @@ function App() {
     }
   };
 
-  console.log(ipData);
   return (
     <main className="bg-[linear-gradient(to_bottom,rgba(0,0,0,0.4),rgba(0,0,0,0.4)),url('./assets/mobile/bg-image-daytime.jpg')] bg-cover bg-no-repeat bg-top min-h-screen ">
       {loading ? (
@@ -176,25 +175,25 @@ function App() {
                 <p className="flex md:flex-col justify-between items-center md:items-start">
                   CURRENT TIMEZONE
                   <span className="preset-2-mob md:preset-2-tablet xl:preset-2">
-                    Europe/London
+                    {ipData.data.timezone.id}
                   </span>
                 </p>
                 <p className="flex md:flex-col justify-between items-center md:items-start">
                   DAY OF THE YEAR
                   <span className="preset-2-mob md:preset-2-tablet xl:preset-2">
-                    295
+                    {weather.day_of_year}
                   </span>
                 </p>
                 <p className="flex md:flex-col justify-between items-center md:items-start">
                   DAY OF THE WEEK
                   <span className="preset-2-mob md:preset-2-tablet xl:preset-2">
-                    5
+                    {weather.day_of_week}
                   </span>
                 </p>
                 <p className="flex md:flex-col justify-between items-center md:items-start">
                   WEEK NUMBER
                   <span className="preset-2-mob md:preset-2-tablet xl:preset-2">
-                    42
+                    {weather.week_number}
                   </span>
                 </p>
               </div>
